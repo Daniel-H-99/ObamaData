@@ -2,10 +2,17 @@ import os
 from tqdm import tqdm
 import numpy as np
 import pickle as pkl
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--data_root', type=str, default='../datasets/desk', help='Path to the train data file.')
+parser.add_argument('--use_landmarks', action='store_true')
+opts = parser.parse_args()
 
 d = {}
 lib = {}
-root = '/home/server25/minyeong_workspace/datasets/desk'     # change to target directory
+root = opts.data_root     # change to target directory
+tgt_folder = 'keypoints' if not opts.use_landmarks else 'landmarks'
 for vid in os.listdir(root):
   if not vid.endswith('.mp4'):
     continue

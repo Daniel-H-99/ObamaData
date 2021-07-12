@@ -9,6 +9,7 @@ from tqdm import tqdm
 import face_recognition
 
 import util
+import argparse
 
 
 def calc_bbox(image_list, batch_size=5):
@@ -42,8 +43,12 @@ def crop_image(data_dir, dest_size, crop_level, vertical_adjust):
     batch_size = 5
     image_list = util.get_file_list(os.path.join(data_dir, 'full'))
 
+    if args.test:
+        box = calc_bbox(image_list, batch_size=batch_size)
+
     for i in tqdm(range(0, len(image_list) - batch_size, batch_size)):
-        box = calc_bbox(image_list[i:i+batch_size], batch_size=batch_size)
+        if not args.test:
+            box = calc_bbox(image_list, batch_size=batch_size)
         if box == None:
             continue
         top, right, bottom, left = box
@@ -72,6 +77,7 @@ if __name__ == '__main__':
     parser.add_argument('--dest_size', type=int, default=512)
     parser.add_argument('--crop_level', type=float, default=2.0, help='Adjust crop image size.')
     parser.add_argument('--vertical_adjust', type=float, default=0.2, help='Adjust vertical location of portrait in image.')
+    parser.add_argument('--test', action='store_true', help="when test time, calculate box for entire frames")
     args = parser.parse_args()
 
     crop_image(args.data_dir, dest_size=args.dest_size, crop_level=args.crop_level, vertical_adjust=args.vertical_adjust)

@@ -11,6 +11,7 @@ np.set_printoptions(suppress=True)
 parser = argparse.ArgumentParser(description='landmark detector')
 
 parser.add_argument("--data_root", help="Root folder of the preprocessed LRS2 dataset", default='../datasets/desk', type=str)
+parser.add_argument("--pca_path", help="Use prepared pca", default=None, type=str)
 
 # parser.add_argument("--vid_name", default='test_0_0.mp4', type=str)
 
@@ -141,8 +142,13 @@ for key in tqdm(sorted(bigList.keys())):
     
 X = np.array(newList)
 
-pca = PCA(n_components = 20)
-pca.fit(X)
+if args.pca_path is not None:
+    with open(args.pca_path, 'rb') as f:
+        pca = pkl.load(f)
+else:
+    pca = PCA(n_components = 20)
+    pca.fit(X)
+
 with open(os.path.join(args.data_root, 'PCA.pickle'), 'wb') as file:
 	pkl.dump(pca, file)
 	

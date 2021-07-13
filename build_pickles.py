@@ -5,7 +5,7 @@ import pickle as pkl
 
 d = {}
 lib = {}
-root = '/home/server25/minyeong_workspace/datasets/desk'     # change to target directory
+root = '../datasets/test'     # change to target directory
 for vid in os.listdir(root):
   if not vid.endswith('.mp4'):
     continue

@@ -6,3 +6,4 @@ done
 python fld.py
 python landmark_normalize.py --pca_path ../datasets/tmp/PCA.pickle
 python preprocess_mfcc.py
+python build_a2l_config.py

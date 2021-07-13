@@ -39,15 +39,15 @@ def calc_bbox(image_list, batch_size=5):
     return (top_sum // items, right_sum // items, bottom_sum // items, left_sum // items)
 
 
-def crop_image(data_dir, dest_size, crop_level, vertical_adjust):
+def crop_image(data_dir, dest_size, crop_level, vertical_adjust, is_test=False):
     batch_size = 5
     image_list = util.get_file_list(os.path.join(data_dir, 'full'))
 
-    if args.test:
+    if is_test:
         box = calc_bbox(image_list, batch_size=batch_size)
 
     for i in tqdm(range(0, len(image_list) - batch_size, batch_size)):
-        if not args.test:
+        if not is_test:
             box = calc_bbox(image_list, batch_size=batch_size)
         if box == None:
             continue
@@ -80,4 +80,4 @@ if __name__ == '__main__':
     parser.add_argument('--test', action='store_true', help="when test time, calculate box for entire frames")
     args = parser.parse_args()
 
-    crop_image(args.data_dir, dest_size=args.dest_size, crop_level=args.crop_level, vertical_adjust=args.vertical_adjust)
+    crop_image(args.data_dir, dest_size=args.dest_size, crop_level=args.crop_level, vertical_adjust=args.vertical_adjust, is_test=args.test)

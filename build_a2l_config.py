@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 import pickle as pkl
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_root', type=str, default='../datasets/train', help='Path to the train data file.')
+parser.add_argument('--data_root', type=str, default='../datasets/desk', help='Path to the train data file.')
 parser.add_argument('--bfm', action='store_true', help='Path to the train data file.')
 opts = parser.parse_args()
 

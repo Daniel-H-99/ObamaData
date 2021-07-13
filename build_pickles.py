@@ -20,11 +20,11 @@ for vid in os.listdir(root):
   lms = []
   keys = []
   fid = 0
-  for lm_txt in tqdm(sorted(os.listdir(os.path.join(root, vid, 'keypoints')))):
+  for lm_txt in tqdm(sorted(os.listdir(os.path.join(root, vid, tgt_folder)))):
     if not len(lm_txt) == 9:
       continue
     key = lm_txt[:-4]
-    lm = np.loadtxt(os.path.join(root, vid, 'keypoints', lm_txt), delimiter=',', dtype=np.float32)
+    lm = np.loadtxt(os.path.join(root, vid, tgt_folder, lm_txt), delimiter=',', dtype=np.float32)
     if not lm.shape == (68, 2):
       continue
     lms.append(lm)

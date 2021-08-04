@@ -48,7 +48,7 @@ def crop_image(data_dir, dest_size, crop_level, vertical_adjust, is_test=False):
 
     for i in tqdm(range(0, len(image_list) - batch_size, batch_size)):
         if not is_test:
-            box = calc_bbox(image_list, batch_size=batch_size)
+            box = calc_bbox(image_list[i:i + batch_size], batch_size=batch_size)
         if box == None:
             continue
         top, right, bottom, left = box

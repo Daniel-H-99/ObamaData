@@ -5,6 +5,7 @@ from sklearn.decomposition import PCA
 import pickle as pkl
 from tqdm import tqdm
 import scipy, cv2, os, sys, argparse
+import util
 
 np.set_printoptions(suppress=True)
 
@@ -83,6 +84,7 @@ for h in range(len(videos)):
         temp = np.array(np.loadtxt(open(os.path.join(kp_dir, kp_file), "rb"), delimiter=",", skiprows=0)).astype("float")
 
         keypoints = temp.reshape(68, 2)
+        scale_coeff = util.extract_scale_coeff(keypoints)
 
         #print keypoints
 
@@ -99,14 +101,16 @@ for h in range(len(videos)):
 
         x = xDash * c - yDash * s	# x = x'cos(theta)-y'sin(theta)
         y = xDash * s + yDash * c   # y = x'sin(theta)+y'cos(theta)
-
+        x /= scale_coeff[0]
+        y /= scale_coeff[1]
+        
         keypointsTilt = np.hstack((x.reshape((-1, 1)), y.reshape((-1, 1))))
 
         # Normalize
         N = np.linalg.norm(keypointsTilt, 2)
 
         #print N
-        keypointsNorm = keypointsTilt / N
+        keypointsNorm = keypointsTilt
 
         kpMouth = keypointsNorm[48:68]
         storeList = [kpMouth, N, theta, mouthMean, keypointsNorm, keypoints]

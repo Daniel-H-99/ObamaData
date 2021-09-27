@@ -5,7 +5,7 @@ from sklearn.decomposition import PCA
 import pickle as pkl
 from tqdm import tqdm
 import scipy, cv2, os, sys, argparse
-import util
+from util import util
 
 np.set_printoptions(suppress=True)
 
@@ -84,7 +84,7 @@ for h in range(len(videos)):
         temp = np.array(np.loadtxt(open(os.path.join(kp_dir, kp_file), "rb"), delimiter=",", skiprows=0)).astype("float")
 
         keypoints = temp.reshape(68, 2)
-        scale_coeff = util.extract_scale_coeff(keypoints)
+        ref = util.extract_ref(keypoints)
 
         #print keypoints
 
@@ -96,13 +96,13 @@ for h in range(len(videos)):
 
         theta = np.deg2rad(getTilt(keypointsMean))
 
-        c = np.cos(theta);	
+        c = np.cos(theta)
         s = np.sin(theta)
 
         x = xDash * c - yDash * s	# x = x'cos(theta)-y'sin(theta)
         y = xDash * s + yDash * c   # y = x'sin(theta)+y'cos(theta)
-        x /= scale_coeff[0]
-        y /= scale_coeff[1]
+        # x /= ref[0]
+        # y /= ref[1]
         
         keypointsTilt = np.hstack((x.reshape((-1, 1)), y.reshape((-1, 1))))
 
@@ -110,13 +110,39 @@ for h in range(len(videos)):
         N = np.linalg.norm(keypointsTilt, 2)
 
         #print N
-        keypointsNorm = keypointsTilt
+        keypointsNorm = keypointsTilt / N
 
-        kpMouth = keypointsNorm[48:68]
+        def get_params(keypoints):
+            def find_pair(index):
+                if i <= 54:
+                    return 102 - i
+                if i <= 59:
+                    return 114 - i
+                if i <= 64:
+                    return 124 - i
+                if i <= 67:
+                    return 132 - i
+
+            def get_mean(x1, x2):
+                return [(abs(x1[0]) + abs(x2[0])) / 2, (x1[1] + x2[1]) / 2]
+
+            params = []
+            for i in list(range(51, 58)) + list(range(62, 67)):
+                rhs = find_pair(i)
+                params.append(get_mean(keypoints[i], keypoints[rhs]))
+                
+            params.append(keypoints[36])
+            params.append(keypoints[45])
+
+            return np.array(params)
+
+        kpMouth = get_params(keypointsNorm)
+        # kpMouth = np.concatenate([keypointsNorm[48:68], keypointsNorm[[36, 45]]], axis=0) 
         storeList = [kpMouth, N, theta, mouthMean, keypointsNorm, keypoints]
         bigList['{:05d}'.format(index)] = storeList
 #         print("added")
     d[video] = bigList
+
 print(d.keys())
 with open(saveFilename, "wb") as outputFile:
 	pkl.dump(d, outputFile)
@@ -150,7 +176,7 @@ if args.pca_path is not None:
     with open(args.pca_path, 'rb') as f:
         pca = pkl.load(f)
 else:
-    pca = PCA(n_components = 20)
+    pca = PCA(n_components = 16)
     pca.fit(X)
 
 with open(os.path.join(args.data_root, 'PCA.pickle'), 'wb') as file:

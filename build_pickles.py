@@ -7,12 +7,18 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_root', type=str, default='../datasets/desk', help='Path to the train data file.')
 parser.add_argument('--use_landmarks', action='store_true')
+parser.add_argument('--landmark_dir', type=str, default=None, help='directory where landmarks are stored')
+
 opts = parser.parse_args()
 
 d = {}
 lib = {}
 root = opts.data_root     # change to target directory
 tgt_folder = 'keypoints' if not opts.use_landmarks else 'landmarks'
+
+if opts.landmark_dir is not None:
+  tgt_folder = opts.landmark_dir
+
 for vid in os.listdir(root):
   if not vid.endswith('.mp4'):
     continue

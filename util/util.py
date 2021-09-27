@@ -28,6 +28,11 @@ def fit_lip_to_face(kp, normed_lip, scale_coeff, tilt, mean):
     
     return new_kp
 
+def extract_ref(kp):
+    ref_x = np.linalg.norm(kp[45] - kp[36], ord=2, axis=0)
+    ref_y = np.linalg.norm(kp[30] - kp[27], ord=2, axis=0)
+    return np.array([ref_x, ref_y])
+
 def extract_scale_coeff(kp):
     ref_x = np.linalg.norm(kp[45] - kp[36], ord=2, axis=0)
     ref_y = np.linalg.norm(kp[30] - kp[27], ord=2, axis=0)
@@ -40,7 +45,7 @@ def normalize_lip(lip):
     ref_x = np.linalg.norm(lip[6] - lip[0], ord=1, axis=0)
     ref_y = np.linalg.norm(lip[9] - lip[3], ord=1, axis=0)
     return lip / np.array([ref_x, ref_y])[np.newaxis]
-    
+
 def save_all_tensors(opt, real_A, fake_B, fake_B_first, fake_B_raw, real_B, flow_ref, conf_ref, flow, weight, modelD):
     if opt.label_nc != 0:
         input_image = tensor2label(real_A, opt.label_nc)

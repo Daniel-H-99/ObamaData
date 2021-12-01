@@ -1,10 +1,10 @@
-# sh preprocess.sh
-# for file in ../data_preprocessed/lof/*.mp4
-# do
-#     mv $file ../datasets/desk/
-# done
-python fld.py #--data_root ../datasets/train
-python landmark_normalize.py #--pca_path ../datasets/tmp/PCA.pickle #--data_root ../datasets/train
-python preprocess_mfcc.py #--data_root ../datasets/train
-python build_a2l_config.py #--data_root ../datasets/train
-python build_pickles.py #--data_root ../datasets/train
+sh preprocess.sh
+for file in ../data_preprocessed/lof/*.mp4
+do
+    mv $file ../datasets/desk/
+done
+# CUDA_VISIBLE_DEVICES=3 python fld.py #--data_root ../datasets/train
+# python landmark_normalize.py
+# python preprocess_mfcc.py
+# python build_a2l_config.py --data_root ../datasets/train_k
+# python build_pickles.py

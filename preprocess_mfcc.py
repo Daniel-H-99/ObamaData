@@ -11,6 +11,7 @@ import audio
 parser = argparse.ArgumentParser(description='landmark detector')
 
 parser.add_argument("--data_root", help="Root folder of the preprocessed LRS2 dataset", default='../datasets/desk', type=str)
+parser.add_argument("--noise", help="noise on audio for tts", default=0, type=float)
 
 # parser.add_argument("--", help="Root folder of the preprocessed LRS2 dataset", default='datasets/face/desk', type=str)
 # parser.add_argument("--vid_name", default='test_0_0.mp4', type=str)
@@ -63,6 +64,8 @@ def build_mel_chunks(audio_path):
     fps =25
     mel_step_size = 16
     wav = audio.load_wav(audio_path, 16000)
+    # noise = np.random.randn(*wav.shape) * args.noise
+    # wav += noise
     mel = audio.melspectrogram(wav)
 
 # 	if np.isnan(mel.reshape(-1)).sum() > 0:

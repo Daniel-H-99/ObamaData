@@ -61,6 +61,8 @@ videos = os.listdir(desk)
 # print("file name: {}".format(file))
 
 
+d_normedKp = {}
+saveFilenameNormedKp = os.path.join(args.data_root, 'normedKp.pickle')
 
 # kp_files = os.listdir(fileDir)
 for h in range(len(videos)):
@@ -70,6 +72,7 @@ for h in range(len(videos)):
     kp_dir = os.path.join(desk, video, 'keypoints')
     kp_files = sorted(os.listdir(kp_dir))
     bigList = {}
+    list_normedKp = []
     next_index = 1
     print("processing {}...".format(kp_dir))
     for i in range(len(kp_files)):
@@ -137,17 +140,22 @@ for h in range(len(videos)):
             return np.array(params)
 
         kpMouth = get_params(keypointsNorm)
-        # kpMouth = np.concatenate([keypointsNorm[48:68], keypointsNorm[[36, 45]]], axis=0) 
+        # kpMouth = np.concatenate([keypointsNorm[48:68], keypointsNorm[[36, 45]]], axis=0)
+
         storeList = [kpMouth, N, theta, mouthMean, keypointsNorm, keypoints]
         bigList['{:05d}'.format(index)] = storeList
+        list_normedKp.append(keypointsNorm[48:] / np.linalg.norm(keypointsNorm[48:], 2))
 #         print("added")
     d[video] = bigList
+    d_normedKp[video] = np.array(list_normedKp)
 
 print(d.keys())
 with open(saveFilename, "wb") as outputFile:
 	pkl.dump(d, outputFile)
-
+with open(saveFilenameNormedKp, "wb") as outputFile:
+	pkl.dump(d_normedKp, outputFile)
 print("normed keypoint dumped")
+
 
 bigList = []
 newList = []
@@ -158,7 +166,7 @@ if (os.path.exists(saveFilename)):
 		bigList = pkl.load(outputFile)
 
 mkps = {}
-print(bigList.keys())
+
 for key in tqdm(sorted(bigList.keys())):
     mkps[key] = {}
     for k in bigList[key].keys():
